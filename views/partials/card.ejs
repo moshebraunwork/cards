@@ -1,45 +1,130 @@
 <%
-/* expects: d (card data), themeId */
+/* expects: d (card data), themeId ; inherits THEMES, EVENTS, hebrewDate, englishDate */
+const theme = (typeof THEMES !== 'undefined' && THEMES[themeId]) || {};
+const ev = (typeof EVENTS !== 'undefined' && EVENTS[d.eventType]) || {};
 const heb = hebrewDate(d.date, d.afterSunset);
 const eng = englishDate(d.date);
+const bgUrl = theme.bg ? ('/img/themes/' + theme.bg) : '';
+
+/* ---- decorative SVG builders (fixed 420x588 canvas, scales with the card) ---- */
+const cornerTransforms = [
+  'translate(16,16)',                 // top-left
+  'translate(404,16) scale(-1,1)',    // top-right
+  'translate(16,572) scale(1,-1)',    // bottom-left
+  'translate(404,572) scale(-1,-1)',  // bottom-right
+];
+
+function frameSvg(style) {
+  let corner = '';
+  if (style === 'ornate') {
+    corner = `
+      <path d="M2 44 C 2 21 21 2 44 2" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M2 44 C 2 31 8 24 18 22 C 11 27 9 35 13 44" fill="none" stroke="currentColor" stroke-width="1"/>
+      <path d="M44 2 C 31 2 24 8 22 18 C 27 11 35 9 44 13" fill="none" stroke="currentColor" stroke-width="1"/>
+      <path d="M6 6 l4.5 4.5 -4.5 4.5 -4.5 -4.5 z" fill="currentColor"/>`;
+  } else if (style === 'deco') {
+    corner = `
+      <path d="M0 30 V0 H30" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M9 26 V9 H26" fill="none" stroke="currentColor" stroke-width="1"/>
+      <path d="M6 6 l5 5 -5 5 -5 -5 z" fill="currentColor"/>`;
+  } else { /* plain */
+    corner = `<path d="M4 4 l4 4 -4 4 -4 -4 z" fill="currentColor" opacity="0.85"/>`;
+  }
+  const corners = cornerTransforms.map(t => `<g transform="${t}">${corner}</g>`).join('');
+  const outer = style === 'plain'
+    ? '<rect x="17.5" y="17.5" width="385" height="553" fill="none" stroke="currentColor" stroke-width="1"/>' +
+      '<rect x="23.5" y="23.5" width="373" height="541" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.7"/>'
+    : '<rect x="16.5" y="16.5" width="387" height="555" fill="none" stroke="currentColor" stroke-width="1.6"/>' +
+      '<rect x="23.5" y="23.5" width="373" height="541" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.75"/>';
+  const centerOrn = style === 'deco'
+    ? '<path d="M210 12 l7 7 -7 7 -7 -7 z" fill="currentColor"/><path d="M210 576 l7 7 -7 7 -7 -7 z" fill="currentColor"/>'
+    : '';
+  return `<svg class="card-frame" viewBox="0 0 420 588" width="420" height="588" preserveAspectRatio="none" aria-hidden="true">${outer}${corners}${centerOrn}</svg>`;
+}
+
+function roseCluster() {
+  return `
+    <g stroke-linecap="round">
+      <path d="M20 96 C 40 78 44 54 40 30" fill="none" stroke="var(--c-leaf)" stroke-width="2"/>
+      <path d="M34 60 C 20 58 12 50 10 38 C 24 40 32 48 34 60 Z" fill="var(--c-leaf)" opacity="0.9"/>
+      <path d="M44 44 C 58 40 66 30 66 18 C 52 22 46 32 44 44 Z" fill="var(--c-leaf)" opacity="0.75"/>
+      <g>
+        <circle cx="40" cy="26" r="17" fill="var(--c-rose)"/>
+        <circle cx="40" cy="26" r="11" fill="var(--c-rose-lt)"/>
+        <path d="M40 18 a8 8 0 0 1 0 16 a6 6 0 0 0 0 -12 a4 4 0 0 1 0 8" fill="var(--c-rose)" opacity="0.7"/>
+      </g>
+      <circle cx="66" cy="46" r="9" fill="var(--c-rose)"/>
+      <circle cx="66" cy="46" r="5" fill="var(--c-rose-lt)"/>
+      <circle cx="18" cy="20" r="7" fill="var(--c-rose)" opacity="0.9"/>
+      <circle cx="18" cy="20" r="4" fill="var(--c-rose-lt)"/>
+    </g>`;
+}
+
+function orchidSprig() {
+  return `
+    <g>
+      <path d="M14 100 C 34 78 40 50 38 22" fill="none" stroke="var(--c-leaf)" stroke-width="1.6"/>
+      <g fill="var(--c-rose)">
+        <g transform="translate(38,22)">
+          <ellipse cx="0" cy="-9" rx="7" ry="11" fill="var(--c-rose-lt)"/>
+          <ellipse cx="9" cy="-2" rx="7" ry="11" transform="rotate(60 9 -2)"/>
+          <ellipse cx="6" cy="9" rx="7" ry="11" transform="rotate(120 6 9)"/>
+          <ellipse cx="-6" cy="9" rx="7" ry="11" transform="rotate(-120 -6 9)" fill="var(--c-rose-lt)"/>
+          <ellipse cx="-9" cy="-2" rx="7" ry="11" transform="rotate(-60 -9 -2)"/>
+          <circle cx="0" cy="0" r="4" fill="var(--c-rose)"/>
+        </g>
+        <g transform="translate(22,58) scale(0.72)">
+          <ellipse cx="0" cy="-9" rx="7" ry="11"/>
+          <ellipse cx="9" cy="-2" rx="7" ry="11" transform="rotate(60 9 -2)" fill="var(--c-rose-lt)"/>
+          <ellipse cx="6" cy="9" rx="7" ry="11" transform="rotate(120 6 9)"/>
+          <ellipse cx="-6" cy="9" rx="7" ry="11" transform="rotate(-120 -6 9)"/>
+          <ellipse cx="-9" cy="-2" rx="7" ry="11" transform="rotate(-60 -9 -2)" fill="var(--c-rose-lt)"/>
+          <circle cx="0" cy="0" r="4"/>
+        </g>
+      </g>
+    </g>`;
+}
 %>
-<div class="card" data-theme="<%= themeId %>">
-  <div class="card-inner">
-    <span class="corner c-tl"></span><span class="corner c-tr"></span>
-    <span class="corner c-bl"></span><span class="corner c-br"></span>
+<div class="card" data-theme="<%= themeId %>" data-frame="<%= theme.frame || 'plain' %>" data-motif="<%= theme.motif || 'none' %>">
+  <div class="card-bg"></div>
+  <% if (bgUrl) { %><div class="card-photo" style="background-image:url('<%= bgUrl %>')"></div><% } %>
+  <div class="card-scrim"></div>
 
-    <div class="card-bsd" data-f="bsd" style="<%= d.bsd ? '' : 'display:none' %>">בס״ד</div>
+  <%- frameSvg(theme.frame || 'plain') %>
 
-    <div class="card-body">
-      <div class="orn orn-top">
-        <svg viewBox="0 0 120 16" aria-hidden="true"><path d="M4 8 H44 M76 8 H116" stroke="currentColor" stroke-width="1" fill="none"/><path d="M60 2 L66 8 L60 14 L54 8 Z" fill="currentColor"/><circle cx="48" cy="8" r="1.4" fill="currentColor"/><circle cx="72" cy="8" r="1.4" fill="currentColor"/></svg>
-      </div>
+  <% if (theme.motif === 'rose') { %>
+    <svg class="motif motif-tl" viewBox="0 0 100 110" width="100" height="110" aria-hidden="true"><%- roseCluster() %></svg>
+    <svg class="motif motif-br" viewBox="0 0 100 110" width="100" height="110" aria-hidden="true"><%- roseCluster() %></svg>
+  <% } else if (theme.motif === 'orchid') { %>
+    <svg class="motif motif-tl" viewBox="0 0 100 110" width="100" height="110" aria-hidden="true"><%- orchidSprig() %></svg>
+    <svg class="motif motif-br" viewBox="0 0 100 110" width="100" height="110" aria-hidden="true"><%- orchidSprig() %></svg>
+  <% } %>
 
-      <p class="card-invite" data-f="inviteLine"><%= d.inviteLine %></p>
+  <div class="card-bsd" data-f="bsd" style="<%= d.bsd ? '' : 'display:none' %>">בס״ד</div>
 
-      <h1 class="card-honoree" data-f="honoree"><%= d.honoree %></h1>
+  <div class="card-content">
+    <p class="card-invite" data-f="inviteLine"><%= d.inviteLine %></p>
 
-      <p class="card-hosts" data-f="hostsLine" style="<%= d.hostsLine ? '' : 'display:none' %>"><%= d.hostsLine %></p>
+    <div class="card-heb" data-f="hebEvent" style="<%= ev.heb ? '' : 'display:none' %>"><%= ev.heb || '' %></div>
 
-      <div class="orn orn-mid">
-        <svg viewBox="0 0 160 18" aria-hidden="true"><path d="M10 9 C 40 9, 50 3, 68 9 M150 9 C 120 9, 110 3, 92 9" stroke="currentColor" stroke-width="1" fill="none"/><path d="M80 3 L84.5 9 L80 15 L75.5 9 Z" fill="none" stroke="currentColor" stroke-width="1"/></svg>
-      </div>
+    <h1 class="card-honoree" data-f="honoree"><%= d.honoree %></h1>
 
-      <p class="card-iyh">אי״ה</p>
-      <p class="card-date" data-f="engDate"><%= eng %></p>
-      <p class="card-hebdate" data-f="hebDate"><%= heb %></p>
-      <p class="card-time" data-f="time" style="<%= d.time ? '' : 'display:none' %>"><%= d.time ? 'at ' + d.time : '' %></p>
+    <p class="card-hosts" data-f="hostsLine" style="<%= d.hostsLine ? '' : 'display:none' %>"><%= d.hostsLine %></p>
 
-      <p class="card-venue" data-f="venue"><%= d.venue %></p>
-      <p class="card-address" data-f="address"><%= d.address %></p>
-
-      <p class="card-note" data-f="note" style="<%= d.note ? '' : 'display:none' %>"><%= d.note %></p>
-
-      <p class="card-signoff" data-f="signoff" style="<%= d.signoff ? '' : 'display:none' %>"><%= d.signoff %></p>
-
-      <div class="orn orn-bottom">
-        <svg viewBox="0 0 120 16" aria-hidden="true"><path d="M4 8 H44 M76 8 H116" stroke="currentColor" stroke-width="1" fill="none"/><path d="M60 2 L66 8 L60 14 L54 8 Z" fill="currentColor"/><circle cx="48" cy="8" r="1.4" fill="currentColor"/><circle cx="72" cy="8" r="1.4" fill="currentColor"/></svg>
-      </div>
+    <div class="orn orn-mid">
+      <svg viewBox="0 0 160 18" aria-hidden="true"><path d="M10 9 C 40 9, 50 3, 68 9 M150 9 C 120 9, 110 3, 92 9" stroke="currentColor" stroke-width="1" fill="none"/><path d="M80 3 L84.5 9 L80 15 L75.5 9 Z" fill="none" stroke="currentColor" stroke-width="1"/></svg>
     </div>
+
+    <p class="card-iyh">אי״ה</p>
+    <p class="card-date" data-f="engDate"><%= eng %></p>
+    <p class="card-hebdate" data-f="hebDate"><%= heb %></p>
+    <p class="card-time" data-f="time" style="<%= d.time ? '' : 'display:none' %>"><%= d.time ? 'at ' + d.time : '' %></p>
+
+    <p class="card-venue" data-f="venue"><%= d.venue %></p>
+    <p class="card-address" data-f="address"><%= d.address %></p>
+
+    <p class="card-note" data-f="note" style="<%= d.note ? '' : 'display:none' %>"><%= d.note %></p>
+
+    <p class="card-signoff" data-f="signoff" style="<%= d.signoff ? '' : 'display:none' %>"><%= d.signoff %></p>
   </div>
 </div>

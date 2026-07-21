@@ -1,68 +1,71 @@
-/* ============ base card ============ */
+/* ============================================================
+   Layered simcha card
+   .card
+     .card-bg     — CSS texture (always; the photographic fallback)
+     .card-photo  — real photo layer (only when the theme sets `bg`)
+     .card-scrim  — legibility + depth wash
+     .card-frame  — ornate SVG border overlay
+     .motif       — floral corner accents
+     .card-content — the text
+   ============================================================ */
 .card {
   width: 420px; height: 588px; /* 5x7 ratio */
-  background: var(--c-bg);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
   color: var(--c-text);
   font-family: var(--serif);
-  position: relative;
-  flex-shrink: 0;
+  background: var(--c-base, #fff);
 }
-.card-inner {
-  position: absolute; inset: 14px;
-  border: 1px solid var(--c-frame);
-  outline: 1px solid var(--c-frame);
-  outline-offset: 3px;
-  display: flex; flex-direction: column;
-}
-.card-body {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  text-align: center; padding: 26px 34px; gap: 2px;
-}
+
+.card-bg, .card-photo, .card-scrim, .card-frame { position: absolute; inset: 0; }
+.card-bg { background: var(--c-bg); }
+.card-photo { background-size: cover; background-position: center; }
+.card-scrim { background: var(--c-scrim, transparent); pointer-events: none; }
+.card-frame { color: var(--c-frame); width: 100%; height: 100%; pointer-events: none; }
+
+/* floral corner motifs */
+.motif { position: absolute; width: 100px; height: 110px; z-index: 3; pointer-events: none; }
+.motif-tl { top: 6px; left: 6px; }
+.motif-br { bottom: 6px; right: 6px; transform: rotate(180deg); }
 
 .card-bsd {
-  position: absolute; top: 10px; right: 14px;
-  font-family: var(--hebrew); font-size: 0.82rem; color: var(--c-accent);
+  position: absolute; top: 22px; right: 28px; z-index: 4;
+  font-family: var(--hebrew); font-size: 0.82rem; color: var(--c-accent); letter-spacing: 0.02em;
 }
 
-.corner { position: absolute; width: 22px; height: 22px; pointer-events: none; }
-.corner::before, .corner::after { content: ''; position: absolute; background: var(--c-accent); }
-.corner::before { width: 22px; height: 1px; }
-.corner::after { width: 1px; height: 22px; }
-.c-tl { top: -3px; left: -3px; }
-.c-tr { top: -3px; right: -3px; transform: scaleX(-1); }
-.c-bl { bottom: -3px; left: -3px; transform: scaleY(-1); }
-.c-br { bottom: -3px; right: -3px; transform: scale(-1); }
-.c-tl::before, .c-tr::before, .c-bl::before, .c-br::before { top: 0; left: 0; }
-.c-tl::after, .c-tr::after, .c-bl::after, .c-br::after { top: 0; left: 0; }
+.card-content {
+  position: absolute; inset: 0; z-index: 3;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 44px 46px; gap: 2px;
+}
 
-.orn { color: var(--c-accent); width: 100%; display: flex; justify-content: center; }
-.orn svg { display: block; }
-.orn-top svg, .orn-bottom svg { width: 120px; height: 16px; }
-.orn-mid svg { width: 160px; height: 18px; }
-.orn-top { margin-bottom: 14px; }
-.orn-mid { margin: 12px 0 10px; }
-.orn-bottom { margin-top: 16px; }
-
+/* ---------------- typography ---------------- */
 .card-invite {
   font-size: 0.98rem; font-weight: 500; font-style: italic;
-  color: var(--c-soft); line-height: 1.45; margin: 0; max-width: 30ch;
+  color: var(--c-soft); line-height: 1.45; margin: 0 0 6px; max-width: 30ch;
+}
+.card-heb {
+  font-family: var(--hebrew); font-weight: 500;
+  font-size: 2.9rem; line-height: 1.05; margin: 2px 0 6px;
+  color: var(--c-foil);
+  text-shadow: 0 1px 0 var(--c-foil-hi, rgba(255,255,255,0.35)), 0 2px 5px rgba(0,0,0,0.12);
 }
 .card-honoree {
-  font-size: 2.35rem; font-weight: 600; line-height: 1.1;
-  margin: 10px 0 6px; color: var(--c-text);
-  letter-spacing: 0.01em;
+  font-size: 2.3rem; font-weight: 600; line-height: 1.1;
+  margin: 4px 0 6px; color: var(--c-text); letter-spacing: 0.01em;
 }
 .card-hosts {
-  font-size: 1.02rem; font-weight: 500; margin: 0; color: var(--c-soft);
-  letter-spacing: 0.04em;
+  font-size: 1.02rem; font-weight: 500; margin: 0; color: var(--c-soft); letter-spacing: 0.04em;
 }
+
+.orn { color: var(--c-accent); width: 100%; display: flex; justify-content: center; margin: 12px 0 10px; }
+.orn svg { display: block; width: 160px; height: 18px; }
 
 .card-iyh { font-family: var(--hebrew); font-size: 0.86rem; color: var(--c-accent); margin: 0 0 2px; }
 .card-date {
-  font-size: 1.06rem; font-weight: 600; margin: 0;
+  font-family: var(--sans); font-size: 0.9rem; font-weight: 600; margin: 0;
   letter-spacing: 0.05em; text-transform: uppercase;
-  font-family: var(--sans); font-size: 0.9rem;
 }
 .card-hebdate { font-family: var(--hebrew); font-size: 1.02rem; margin: 3px 0 0; color: var(--c-soft); }
 .card-time { font-family: var(--sans); font-size: 0.85rem; font-weight: 500; margin: 5px 0 0; color: var(--c-soft); letter-spacing: 0.04em; }
@@ -76,70 +79,85 @@
 }
 .card-signoff { font-style: italic; font-size: 0.98rem; margin: 10px 0 0; color: var(--c-text); }
 
-/* ============ themes ============ */
+/* ============================================================
+   themes
+   ============================================================ */
 
+/* 01 — Gilded Heirloom: warm parchment + ornate gold */
 .card[data-theme="gilded"] {
-  --c-bg: #FDF8EC;
-  --c-text: #23303F;
-  --c-soft: #56606E;
-  --c-accent: #B08D3E;
-  --c-frame: #C9AE6B;
+  --c-base: #FAF3E2;
+  --c-bg: radial-gradient(ellipse 120% 90% at 50% 22%, #FEFBF2 0%, #F8F0DC 55%, #F1E6CB 100%);
+  --c-scrim: radial-gradient(ellipse 90% 75% at 50% 38%, rgba(255,255,255,0.22), transparent 68%);
+  --c-text: #23303F; --c-soft: #5A6472;
+  --c-accent: #B08D3E; --c-frame: #BE9C4C;
+  --c-foil: #A9822C; --c-foil-hi: rgba(255,248,225,0.55);
 }
 
+/* 02 — Royal Sapphire: navy velvet + deco gold */
 .card[data-theme="royal"] {
-  --c-bg: #182645;
-  --c-text: #F5EFDD;
-  --c-soft: #C4BFA9;
-  --c-accent: #C9A961;
-  --c-frame: #8F7B45;
+  --c-base: #16233F;
+  --c-bg: radial-gradient(ellipse 120% 95% at 50% 30%, #26375F 0%, #1A2949 45%, #101B36 100%);
+  --c-scrim: radial-gradient(ellipse 85% 80% at 50% 38%, transparent 45%, rgba(6,10,22,0.45) 100%);
+  --c-text: #F3ECD6; --c-soft: #C0BBA4;
+  --c-accent: #CBAB63; --c-frame: #C3A25A;
+  --c-foil: #E7CD84; --c-foil-hi: rgba(255,240,200,0.25);
 }
-.card[data-theme="royal"] .card-honoree { color: #E9DCB8; }
+.card[data-theme="royal"] .card-honoree { color: #EEDFB4; }
 
+/* 03 — Rose Garden: blush + sage roses */
 .card[data-theme="garden"] {
-  --c-bg: #FFF9F5;
-  --c-text: #4A4440;
-  --c-soft: #837A73;
-  --c-accent: #C98A8E;
-  --c-frame: #DDBFC1;
+  --c-base: #FFF8F4;
+  --c-bg: radial-gradient(ellipse 120% 95% at 50% 18%, #FFFDFC 0%, #FDF1F0 55%, #F8E4E4 100%);
+  --c-scrim: radial-gradient(ellipse 90% 75% at 50% 40%, rgba(255,255,255,0.24), transparent 68%);
+  --c-text: #4A4440; --c-soft: #877B74;
+  --c-accent: #C98A8E; --c-frame: #E0C2C4;
+  --c-foil: #C08560; --c-foil-hi: rgba(255,248,240,0.5);
+  --c-rose: #CE8A90; --c-rose-lt: #E7B7BB; --c-leaf: #97A986;
 }
-.card[data-theme="garden"] .card-iyh, .card[data-theme="garden"] .card-bsd { color: #8A9B7C; }
-.card[data-theme="garden"] .orn-mid { color: #8A9B7C; }
+.card[data-theme="garden"] .card-iyh, .card[data-theme="garden"] .card-bsd { color: #8FA07F; }
+.card[data-theme="garden"] .orn { color: #A9868A; }
 
+/* 04 — Ivory Letterpress: minimal, restrained */
 .card[data-theme="ivory"] {
-  --c-bg: #FFFDF8;
-  --c-text: #2E3238;
-  --c-soft: #6C7076;
-  --c-accent: #2E3238;
-  --c-frame: #D9D5CC;
+  --c-base: #FFFDF8;
+  --c-bg: linear-gradient(170deg, #FFFEFB 0%, #FAF7F0 100%);
+  --c-scrim: transparent;
+  --c-text: #2E3238; --c-soft: #6C7076;
+  --c-accent: #6A6E74; --c-frame: #D3CFC4;
+  --c-foil: #9A8C63; --c-foil-hi: rgba(255,255,255,0.6);
 }
-.card[data-theme="ivory"] .card-inner { outline: none; }
-.card[data-theme="ivory"] .corner { display: none; }
+.card[data-theme="ivory"] .card-heb { text-shadow: none; letter-spacing: 0.02em; }
 .card[data-theme="ivory"] .card-honoree { letter-spacing: 0.04em; }
 .card[data-theme="ivory"] .card-date { letter-spacing: 0.14em; }
 
+/* 05 — Vintage Estate: burgundy + cream + gold */
 .card[data-theme="estate"] {
-  --c-bg: #571C27;
-  --c-text: #F4E8D3;
-  --c-soft: #CDB79C;
-  --c-accent: #D9BE84;
-  --c-frame: #A57F52;
+  --c-base: #4E1620;
+  --c-bg: radial-gradient(ellipse 120% 95% at 50% 28%, #6E2732 0%, #551C27 48%, #3F111B 100%);
+  --c-scrim: radial-gradient(ellipse 85% 80% at 50% 40%, transparent 45%, rgba(20,4,8,0.4) 100%);
+  --c-text: #F4E8D3; --c-soft: #D0BA9E;
+  --c-accent: #D9BE84; --c-frame: #C6A468;
+  --c-foil: #EBD199; --c-foil-hi: rgba(255,240,205,0.22);
 }
-.card[data-theme="estate"] .card-honoree { color: #EBD9B4; }
+.card[data-theme="estate"] .card-honoree { color: #EEDCB6; }
 
+/* 06 — Morning Sky: pale blue + orchid */
 .card[data-theme="sky"] {
-  --c-bg: #EAF2F7;
-  --c-text: #33506B;
-  --c-soft: #62778C;
-  --c-accent: #6E88A3;
-  --c-frame: #AFC3D3;
+  --c-base: #EAF2F7;
+  --c-bg: radial-gradient(ellipse 120% 95% at 50% 18%, #F6FAFD 0%, #E6F0F6 55%, #D6E5EF 100%);
+  --c-scrim: radial-gradient(ellipse 90% 75% at 50% 40%, rgba(255,255,255,0.22), transparent 68%);
+  --c-text: #33506B; --c-soft: #63788C;
+  --c-accent: #6E88A3; --c-frame: #B4C6D5;
+  --c-foil: #7C93AB; --c-foil-hi: rgba(255,255,255,0.55);
+  --c-rose: #8FA6C4; --c-rose-lt: #C0D2E4; --c-leaf: #9DB6AE;
 }
 
-/* small screens: scale card down fluidly */
+/* small screens: scale the fixed-size card down fluidly */
 @media (max-width: 480px) {
-  .preview-frame { width: 100%; display: flex; justify-content: center; }
+  .preview-frame { width: 100%; display: flex; justify-content: center; overflow: visible; }
   .preview-frame .card {
     transform: scale(calc((100vw - 32px) / 420));
     transform-origin: top center;
   }
-  .preview-frame { height: calc((100vw - 32px) * 1.4 + 10px); overflow: visible; }
+  .preview-frame { height: calc((100vw - 32px) * 1.4 + 10px); }
 }
