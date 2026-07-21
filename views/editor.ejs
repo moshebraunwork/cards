@@ -115,7 +115,7 @@
       eventDefaults: <%- JSON.stringify(Object.fromEntries(Object.entries(EVENTS).map(([k, v]) => [k, v.invite]))) %>
     };
   </script>
-  <script src="/vendor/html2canvas.min.js"></script>
-  <script src="/js/editor.js"></script>
+  <script src="<%= asset('/vendor/html2canvas.min.js') %>"></script>
+  <script src="<%= asset('/js/editor.js') %>"></script>
 </body>
 </html>
