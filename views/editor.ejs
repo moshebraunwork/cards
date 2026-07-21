@@ -112,7 +112,8 @@
     window.__CARD__ = {
       themeId: <%- JSON.stringify(themeId) %>,
       data: <%- JSON.stringify(data) %>,
-      eventDefaults: <%- JSON.stringify(Object.fromEntries(Object.entries(EVENTS).map(([k, v]) => [k, v.invite]))) %>
+      eventDefaults: <%- JSON.stringify(Object.fromEntries(Object.entries(EVENTS).map(([k, v]) => [k, v.invite]))) %>,
+      eventHeb: <%- JSON.stringify(Object.fromEntries(Object.entries(EVENTS).map(([k, v]) => [k, v.heb]))) %>
     };
   </script>
   <script src="<%= asset('/vendor/html2canvas.min.js') %>"></script>

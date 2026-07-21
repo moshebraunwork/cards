@@ -59,8 +59,17 @@
     if (hideWhenEmpty) el.style.display = text.trim() ? '' : 'none';
   }
 
+  function updateHeb() {
+    var el = F('hebEvent');
+    if (!el) return;
+    var word = (S.eventHeb && S.eventHeb[$('f-eventType').value]) || '';
+    el.textContent = word;
+    el.style.display = word ? '' : 'none';
+  }
+
   function renderStatic() {
     var d = collect();
+    updateHeb();
     setText('inviteLine', d.inviteLine, false);
     setText('honoree', d.honoree, false);
     setText('hostsLine', d.hostsLine, true);
