@@ -4,9 +4,27 @@
   var card = document.querySelector('#cardNode .card');
   var $ = function (id) { return document.getElementById(id); };
   var F = function (name) { return card.querySelector('[data-f="' + name + '"]'); };
+  var LS_KEY = 'besimcha:' + S.themeId;
 
-  var fields = ['inviteLine', 'honoree', 'hostsLine', 'time', 'venue', 'address', 'note', 'signoff'];
-  var inviteDirty = S.data.inviteLine !== S.eventDefaults[S.data.eventType];
+  var textFields = ['inviteLine', 'honoree', 'hostsLine', 'time', 'venue', 'address', 'note', 'signoff'];
+  var inviteDirty = false;
+
+  // ---- restore saved edits for this design ----
+  try {
+    var saved = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+    if (saved && typeof saved === 'object') {
+      textFields.forEach(function (f) {
+        if (typeof saved[f] === 'string') $('f-' + f).value = saved[f];
+      });
+      if (saved.eventType && $('f-eventType').querySelector('option[value="' + saved.eventType + '"]')) {
+        $('f-eventType').value = saved.eventType;
+      }
+      if (typeof saved.date === 'string') $('f-date').value = saved.date;
+      $('f-afterSunset').checked = !!saved.afterSunset;
+      $('f-bsd').checked = saved.bsd !== false;
+      inviteDirty = !!saved.inviteDirty;
+    }
+  } catch (e) {}
 
   function collect() {
     return {
@@ -24,6 +42,14 @@
       note: $('f-note').value,
       signoff: $('f-signoff').value
     };
+  }
+
+  function persist() {
+    try {
+      var d = collect();
+      d.inviteDirty = inviteDirty;
+      localStorage.setItem(LS_KEY, JSON.stringify(d));
+    } catch (e) {}
   }
 
   function setText(name, text, hideWhenEmpty) {
@@ -44,12 +70,14 @@
     setText('note', d.note, true);
     setText('signoff', d.signoff, true);
     F('bsd').style.display = d.bsd ? '' : 'none';
+    persist();
   }
 
   var hebTimer = null;
   function renderDates() {
     var d = $('f-date').value;
     var sunset = $('f-afterSunset').checked;
+    persist();
     if (!d) { setText('engDate', '', false); setText('hebDate', '', false); return; }
     clearTimeout(hebTimer);
     hebTimer = setTimeout(function () {
@@ -64,7 +92,7 @@
   }
 
   // ---- wire inputs ----
-  fields.forEach(function (f) {
+  textFields.forEach(function (f) {
     $('f-' + f).addEventListener('input', renderStatic);
   });
   $('f-bsd').addEventListener('change', renderStatic);
@@ -75,99 +103,43 @@
   $('f-eventType').addEventListener('change', function () {
     if (!inviteDirty) {
       $('f-inviteLine').value = S.eventDefaults[this.value] || '';
-      renderStatic();
     }
+    renderStatic();
   });
 
-  // ---- theme switching ----
+  // ---- theme switching (navigates so each design keeps its own saved edits) ----
   document.getElementById('themePills').addEventListener('click', function (e) {
     var pill = e.target.closest('.pill');
-    if (!pill) return;
-    S.themeId = pill.dataset.themeid;
-    card.dataset.theme = S.themeId;
-    document.querySelectorAll('.pill').forEach(function (p) { p.classList.toggle('active', p === pill); });
-    var url = new URL(location.href);
-    if (S.mode === 'create') history.replaceState(null, '', '/design/' + S.themeId);
+    if (!pill || pill.dataset.themeid === S.themeId) return;
+    persist();
+    location.href = '/design/' + pill.dataset.themeid;
   });
 
-  // ---- save ----
-  $('saveBtn').addEventListener('click', function () {
-    var btn = this;
-    btn.disabled = true;
-    var payload = { data: collect() };
-    var req;
-    if (S.mode === 'edit' || S.slug) {
-      payload.editKey = S.editKey;
-      req = fetch('/api/cards/' + S.slug, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-    } else {
-      req = fetch('/api/cards', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-    }
-    req.then(function (r) {
-      if (!r.ok) throw new Error('Save failed (' + r.status + ')');
-      return r.json();
-    }).then(function (j) {
-      S.slug = j.slug;
-      S.editKey = j.editKey;
-      S.mode = 'edit';
-      btn.textContent = 'Save changes';
-      openShareModal();
-    }).catch(function (err) {
-      alert(err.message || 'Something went wrong saving your card. Please try again.');
-    }).finally(function () {
-      btn.disabled = false;
-    });
-  });
-
-  function openShareModal() {
-    var origin = location.origin;
-    var shareUrl = origin + '/card/' + S.slug;
-    var editUrl = origin + '/edit/' + S.slug + '/' + S.editKey;
-    $('shareUrl').value = shareUrl;
-    $('editUrl').value = editUrl;
-    $('waShare').href = 'https://wa.me/?text=' + encodeURIComponent("You're invited! " + shareUrl);
-    $('viewCard').href = shareUrl;
-    $('shareModal').hidden = false;
-  }
-
-  $('closeModal').addEventListener('click', function () { $('shareModal').hidden = true; });
-  $('shareModal').addEventListener('click', function (e) {
-    if (e.target === this) this.hidden = true;
-  });
-
-  document.querySelectorAll('[data-copy]').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var input = $(btn.dataset.copy);
-      input.select();
-      navigator.clipboard.writeText(input.value).then(function () {
-        var old = btn.textContent;
-        btn.textContent = 'Copied!';
-        setTimeout(function () { btn.textContent = old; }, 1500);
-      });
-    });
+  // ---- reset ----
+  $('resetBtn').addEventListener('click', function () {
+    try { localStorage.removeItem(LS_KEY); } catch (e) {}
+    location.reload();
   });
 
   // ---- download PNG ----
   $('downloadBtn').addEventListener('click', function () {
     var btn = this;
     btn.disabled = true;
+    btn.textContent = 'Preparing your card…';
     html2canvas(card, { scale: 3, useCORS: true, backgroundColor: null })
       .then(function (canvas) {
         var a = document.createElement('a');
-        a.download = 'simcha-card.png';
+        a.download = 'simcha-card-' + S.themeId + '.png';
         a.href = canvas.toDataURL('image/png');
         a.click();
       })
-      .finally(function () { btn.disabled = false; });
+      .finally(function () {
+        btn.disabled = false;
+        btn.textContent = '⬇ Download your card — free';
+      });
   });
 
-  // initial paint of dates (server already rendered, but sync after any prefill)
+  // initial paint (also applies restored values to the preview)
+  renderStatic();
   renderDates();
 })();

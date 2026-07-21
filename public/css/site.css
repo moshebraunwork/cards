@@ -169,36 +169,6 @@ h1, h2 { font-family: var(--serif); font-weight: 600; margin: 0; }
 .editor-preview { position: sticky; top: 90px; display: flex; justify-content: center; }
 .preview-frame { filter: drop-shadow(0 18px 40px rgba(60, 45, 10, 0.18)); }
 
-/* ---------- card page ---------- */
-.card-page {
-  display: flex; flex-direction: column; align-items: center; gap: 26px;
-  padding: clamp(24px, 5vw, 60px) 16px 50px; min-height: 100vh;
-}
-.card-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-.made-with { font-size: 0.85rem; color: var(--ink-soft); border-bottom: 1px solid var(--line); padding-bottom: 2px; }
-.made-with:hover { color: var(--gold); border-color: var(--gold); }
-
-/* ---------- modal ---------- */
-.modal-backdrop {
-  position: fixed; inset: 0; background: rgba(25, 20, 8, 0.55);
-  display: flex; align-items: center; justify-content: center; z-index: 50; padding: 16px;
-}
-.modal {
-  background: var(--white); border-radius: 4px; border-top: 3px solid var(--gold);
-  max-width: 560px; width: 100%; padding: 28px;
-  box-shadow: 0 30px 70px rgba(0,0,0,0.3);
-}
-.modal h2 { font-size: 1.5rem; margin-bottom: 18px; }
-.share-block { margin-bottom: 16px; }
-.share-label { display: block; font-size: 0.76rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 5px; }
-.share-row { display: flex; gap: 8px; }
-.share-row input {
-  flex: 1; min-width: 0; padding: 9px 11px; font-size: 0.86rem;
-  border: 1px solid var(--line); border-radius: 2px; background: var(--parchment);
-  color: var(--ink);
-}
-.modal-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
-
 /* ---------- notfound ---------- */
 .notfound { text-align: center; padding: 90px 20px; }
 .notfound h1 { font-size: 2rem; margin-bottom: 10px; }
@@ -216,4 +186,27 @@ h1, h2 { font-family: var(--serif); font-weight: 600; margin: 0; }
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
+}
+
+/* ---------- editor header & download flow ---------- */
+.editor-header { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; }
+.btn-back { justify-self: start; padding: 8px 14px; font-size: 0.8rem; }
+.editor-title { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.wordmark-small { font-family: var(--serif); font-weight: 700; letter-spacing: 0.12em; font-size: 1.05rem; text-transform: uppercase; }
+.design-tag {
+  font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase;
+  background: var(--parchment-deep); color: var(--ink-soft);
+  padding: 2px 10px; border-radius: 999px;
+}
+.header-spacer { justify-self: end; }
+
+.editor-preview { flex-direction: column; align-items: center; gap: 18px; }
+.btn-download { width: 100%; max-width: 420px; }
+.save-note { font-size: 0.8rem; color: var(--ink-soft); text-align: center; max-width: 40ch; margin: 0; }
+.form-sub { color: var(--ink-soft); font-size: 0.9rem; margin: -10px 0 18px; }
+#resetBtn { margin-top: 14px; }
+
+@media (min-width: 901px) {
+  .editor-layout { grid-template-columns: 1fr minmax(320px, 420px); }
+  .editor-preview { order: -1; }
 }

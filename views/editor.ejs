@@ -2,18 +2,31 @@
 <html lang="en">
 <head>
   <%- include('partials/head') %>
-  <title><%= mode === 'edit' ? 'Edit your card' : 'Design No. ' + THEMES[themeId].no + ' — ' + THEMES[themeId].name %> | <%= BRAND %></title>
+  <title>Design No. <%= THEMES[themeId].no %> — <%= THEMES[themeId].name %> | <%= BRAND %></title>
   <meta name="robots" content="noindex, nofollow">
 </head>
 <body class="page-editor">
-  <header class="site-header">
-    <a class="wordmark" href="/"><%= BRAND %></a>
-    <span class="header-note"><%= mode === 'edit' ? 'Editing your card' : THEMES[themeId].name %></span>
+  <header class="site-header editor-header">
+    <a class="btn btn-quiet btn-back" href="/#designs">← Back to gallery</a>
+    <div class="editor-title">
+      <span class="wordmark-small"><%= BRAND %>-<%= THEMES[themeId].no %></span>
+      <span class="design-tag"><%= THEMES[themeId].name %></span>
+    </div>
+    <span class="header-spacer"></span>
   </header>
 
   <main class="editor-layout">
+    <section class="editor-preview">
+      <div class="preview-frame" id="cardNode">
+        <%- include('partials/card', { d: data, themeId }) %>
+      </div>
+      <button class="btn btn-gold btn-big btn-download" id="downloadBtn">⬇ Download your card — free</button>
+      <p class="save-note">Your edits are saved in this browser. Come back to this page any time to continue.</p>
+    </section>
+
     <section class="editor-form">
-      <h1 class="form-title"><%= mode === 'edit' ? 'Edit your card' : 'Personalize your card' %></h1>
+      <h1 class="form-title">Personalize</h1>
+      <p class="form-sub">Every field updates the preview instantly.</p>
 
       <label class="field">
         <span>Simcha</span>
@@ -91,44 +104,12 @@
         </div>
       </div>
 
-      <div class="form-actions">
-        <button class="btn btn-gold btn-big" id="saveBtn"><%= mode === 'edit' ? 'Save changes' : 'Create my card' %></button>
-        <button class="btn btn-quiet" id="downloadBtn">Download image</button>
-      </div>
-      <p class="form-hint">Saving creates a share link for guests and a private edit link for you.</p>
-    </section>
-
-    <section class="editor-preview">
-      <div class="preview-frame" id="cardNode">
-        <%- include('partials/card', { d: data, themeId }) %>
-      </div>
+      <button class="btn btn-quiet" id="resetBtn">Reset this design</button>
     </section>
   </main>
 
-  <div class="modal-backdrop" id="shareModal" hidden>
-    <div class="modal">
-      <h2>בשעה טובה — your card is ready</h2>
-      <div class="share-block">
-        <span class="share-label">Share with guests</span>
-        <div class="share-row"><input id="shareUrl" readonly><button class="btn btn-quiet" data-copy="shareUrl">Copy</button></div>
-      </div>
-      <div class="share-block">
-        <span class="share-label">Private edit link — save this to make changes</span>
-        <div class="share-row"><input id="editUrl" readonly><button class="btn btn-quiet" data-copy="editUrl">Copy</button></div>
-      </div>
-      <div class="modal-actions">
-        <a class="btn btn-gold" id="waShare" target="_blank" rel="noopener">Share on WhatsApp</a>
-        <a class="btn btn-quiet" id="viewCard" target="_blank" rel="noopener">Open card</a>
-        <button class="btn btn-quiet" id="closeModal">Close</button>
-      </div>
-    </div>
-  </div>
-
   <script>
     window.__CARD__ = {
-      mode: <%- JSON.stringify(mode) %>,
-      slug: <%- JSON.stringify(slug) %>,
-      editKey: <%- JSON.stringify(editKey) %>,
       themeId: <%- JSON.stringify(themeId) %>,
       data: <%- JSON.stringify(data) %>,
       eventDefaults: <%- JSON.stringify(Object.fromEntries(Object.entries(EVENTS).map(([k, v]) => [k, v.invite]))) %>
