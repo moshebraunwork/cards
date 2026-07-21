@@ -1,0 +1,145 @@
+/* ============ base card ============ */
+.card {
+  width: 420px; height: 588px; /* 5x7 ratio */
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: var(--serif);
+  position: relative;
+  flex-shrink: 0;
+}
+.card-inner {
+  position: absolute; inset: 14px;
+  border: 1px solid var(--c-frame);
+  outline: 1px solid var(--c-frame);
+  outline-offset: 3px;
+  display: flex; flex-direction: column;
+}
+.card-body {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 26px 34px; gap: 2px;
+}
+
+.card-bsd {
+  position: absolute; top: 10px; right: 14px;
+  font-family: var(--hebrew); font-size: 0.82rem; color: var(--c-accent);
+}
+
+.corner { position: absolute; width: 22px; height: 22px; pointer-events: none; }
+.corner::before, .corner::after { content: ''; position: absolute; background: var(--c-accent); }
+.corner::before { width: 22px; height: 1px; }
+.corner::after { width: 1px; height: 22px; }
+.c-tl { top: -3px; left: -3px; }
+.c-tr { top: -3px; right: -3px; transform: scaleX(-1); }
+.c-bl { bottom: -3px; left: -3px; transform: scaleY(-1); }
+.c-br { bottom: -3px; right: -3px; transform: scale(-1); }
+.c-tl::before, .c-tr::before, .c-bl::before, .c-br::before { top: 0; left: 0; }
+.c-tl::after, .c-tr::after, .c-bl::after, .c-br::after { top: 0; left: 0; }
+
+.orn { color: var(--c-accent); width: 100%; display: flex; justify-content: center; }
+.orn svg { display: block; }
+.orn-top svg, .orn-bottom svg { width: 120px; height: 16px; }
+.orn-mid svg { width: 160px; height: 18px; }
+.orn-top { margin-bottom: 14px; }
+.orn-mid { margin: 12px 0 10px; }
+.orn-bottom { margin-top: 16px; }
+
+.card-invite {
+  font-size: 0.98rem; font-weight: 500; font-style: italic;
+  color: var(--c-soft); line-height: 1.45; margin: 0; max-width: 30ch;
+}
+.card-honoree {
+  font-size: 2.35rem; font-weight: 600; line-height: 1.1;
+  margin: 10px 0 6px; color: var(--c-text);
+  letter-spacing: 0.01em;
+}
+.card-hosts {
+  font-size: 1.02rem; font-weight: 500; margin: 0; color: var(--c-soft);
+  letter-spacing: 0.04em;
+}
+
+.card-iyh { font-family: var(--hebrew); font-size: 0.86rem; color: var(--c-accent); margin: 0 0 2px; }
+.card-date {
+  font-size: 1.06rem; font-weight: 600; margin: 0;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  font-family: var(--sans); font-size: 0.9rem;
+}
+.card-hebdate { font-family: var(--hebrew); font-size: 1.02rem; margin: 3px 0 0; color: var(--c-soft); }
+.card-time { font-family: var(--sans); font-size: 0.85rem; font-weight: 500; margin: 5px 0 0; color: var(--c-soft); letter-spacing: 0.04em; }
+
+.card-venue { font-size: 1.2rem; font-weight: 600; margin: 12px 0 0; }
+.card-address { font-family: var(--sans); font-size: 0.84rem; margin: 3px 0 0; color: var(--c-soft); letter-spacing: 0.03em; }
+
+.card-note {
+  font-family: var(--sans); font-size: 0.8rem; margin: 12px 0 0;
+  color: var(--c-soft); line-height: 1.5; max-width: 34ch;
+}
+.card-signoff { font-style: italic; font-size: 0.98rem; margin: 10px 0 0; color: var(--c-text); }
+
+/* ============ themes ============ */
+
+.card[data-theme="gilded"] {
+  --c-bg: #FDF8EC;
+  --c-text: #23303F;
+  --c-soft: #56606E;
+  --c-accent: #B08D3E;
+  --c-frame: #C9AE6B;
+}
+
+.card[data-theme="royal"] {
+  --c-bg: #182645;
+  --c-text: #F5EFDD;
+  --c-soft: #C4BFA9;
+  --c-accent: #C9A961;
+  --c-frame: #8F7B45;
+}
+.card[data-theme="royal"] .card-honoree { color: #E9DCB8; }
+
+.card[data-theme="garden"] {
+  --c-bg: #FFF9F5;
+  --c-text: #4A4440;
+  --c-soft: #837A73;
+  --c-accent: #C98A8E;
+  --c-frame: #DDBFC1;
+}
+.card[data-theme="garden"] .card-iyh, .card[data-theme="garden"] .card-bsd { color: #8A9B7C; }
+.card[data-theme="garden"] .orn-mid { color: #8A9B7C; }
+
+.card[data-theme="ivory"] {
+  --c-bg: #FFFDF8;
+  --c-text: #2E3238;
+  --c-soft: #6C7076;
+  --c-accent: #2E3238;
+  --c-frame: #D9D5CC;
+}
+.card[data-theme="ivory"] .card-inner { outline: none; }
+.card[data-theme="ivory"] .corner { display: none; }
+.card[data-theme="ivory"] .card-honoree { letter-spacing: 0.04em; }
+.card[data-theme="ivory"] .card-date { letter-spacing: 0.14em; }
+
+.card[data-theme="estate"] {
+  --c-bg: #571C27;
+  --c-text: #F4E8D3;
+  --c-soft: #CDB79C;
+  --c-accent: #D9BE84;
+  --c-frame: #A57F52;
+}
+.card[data-theme="estate"] .card-honoree { color: #EBD9B4; }
+
+.card[data-theme="sky"] {
+  --c-bg: #EAF2F7;
+  --c-text: #33506B;
+  --c-soft: #62778C;
+  --c-accent: #6E88A3;
+  --c-frame: #AFC3D3;
+}
+
+/* small screens: scale card down fluidly */
+@media (max-width: 480px) {
+  .preview-frame { width: 100%; display: flex; justify-content: center; }
+  .preview-frame .card {
+    transform: scale(calc((100vw - 32px) / 420));
+    transform-origin: top center;
+  }
+  .preview-frame { height: calc((100vw - 32px) * 1.4 + 10px); overflow: visible; }
+}

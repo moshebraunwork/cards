@@ -1,0 +1,45 @@
+<%
+/* expects: d (card data), themeId */
+const heb = hebrewDate(d.date, d.afterSunset);
+const eng = englishDate(d.date);
+%>
+<div class="card" data-theme="<%= themeId %>">
+  <div class="card-inner">
+    <span class="corner c-tl"></span><span class="corner c-tr"></span>
+    <span class="corner c-bl"></span><span class="corner c-br"></span>
+
+    <div class="card-bsd" data-f="bsd" style="<%= d.bsd ? '' : 'display:none' %>">בס״ד</div>
+
+    <div class="card-body">
+      <div class="orn orn-top">
+        <svg viewBox="0 0 120 16" aria-hidden="true"><path d="M4 8 H44 M76 8 H116" stroke="currentColor" stroke-width="1" fill="none"/><path d="M60 2 L66 8 L60 14 L54 8 Z" fill="currentColor"/><circle cx="48" cy="8" r="1.4" fill="currentColor"/><circle cx="72" cy="8" r="1.4" fill="currentColor"/></svg>
+      </div>
+
+      <p class="card-invite" data-f="inviteLine"><%= d.inviteLine %></p>
+
+      <h1 class="card-honoree" data-f="honoree"><%= d.honoree %></h1>
+
+      <p class="card-hosts" data-f="hostsLine" style="<%= d.hostsLine ? '' : 'display:none' %>"><%= d.hostsLine %></p>
+
+      <div class="orn orn-mid">
+        <svg viewBox="0 0 160 18" aria-hidden="true"><path d="M10 9 C 40 9, 50 3, 68 9 M150 9 C 120 9, 110 3, 92 9" stroke="currentColor" stroke-width="1" fill="none"/><path d="M80 3 L84.5 9 L80 15 L75.5 9 Z" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+      </div>
+
+      <p class="card-iyh">אי״ה</p>
+      <p class="card-date" data-f="engDate"><%= eng %></p>
+      <p class="card-hebdate" data-f="hebDate"><%= heb %></p>
+      <p class="card-time" data-f="time" style="<%= d.time ? '' : 'display:none' %>"><%= d.time ? 'at ' + d.time : '' %></p>
+
+      <p class="card-venue" data-f="venue"><%= d.venue %></p>
+      <p class="card-address" data-f="address"><%= d.address %></p>
+
+      <p class="card-note" data-f="note" style="<%= d.note ? '' : 'display:none' %>"><%= d.note %></p>
+
+      <p class="card-signoff" data-f="signoff" style="<%= d.signoff ? '' : 'display:none' %>"><%= d.signoff %></p>
+
+      <div class="orn orn-bottom">
+        <svg viewBox="0 0 120 16" aria-hidden="true"><path d="M4 8 H44 M76 8 H116" stroke="currentColor" stroke-width="1" fill="none"/><path d="M60 2 L66 8 L60 14 L54 8 Z" fill="currentColor"/><circle cx="48" cy="8" r="1.4" fill="currentColor"/><circle cx="72" cy="8" r="1.4" fill="currentColor"/></svg>
+      </div>
+    </div>
+  </div>
+</div>

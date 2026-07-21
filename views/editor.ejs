@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <%- include('partials/head') %>
+  <title><%= mode === 'edit' ? 'Edit your card' : 'Design No. ' + THEMES[themeId].no + ' — ' + THEMES[themeId].name %> | <%= BRAND %></title>
+  <meta name="robots" content="noindex, nofollow">
+</head>
+<body class="page-editor">
+  <header class="site-header">
+    <a class="wordmark" href="/"><%= BRAND %></a>
+    <span class="header-note"><%= mode === 'edit' ? 'Editing your card' : THEMES[themeId].name %></span>
+  </header>
+
+  <main class="editor-layout">
+    <section class="editor-form">
+      <h1 class="form-title"><%= mode === 'edit' ? 'Edit your card' : 'Personalize your card' %></h1>
+
+      <label class="field">
+        <span>Simcha</span>
+        <select id="f-eventType">
+          <% for (const [id, ev] of Object.entries(EVENTS)) { %>
+            <option value="<%= id %>" <%= data.eventType === id ? 'selected' : '' %>><%= ev.label %></option>
+          <% } %>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Invitation line</span>
+        <textarea id="f-inviteLine" rows="2" maxlength="200"><%= data.inviteLine %></textarea>
+      </label>
+
+      <label class="field">
+        <span>Name of the baal simcha</span>
+        <input id="f-honoree" maxlength="120" value="<%= data.honoree %>" placeholder="Yosef Chaim">
+      </label>
+
+      <label class="field">
+        <span>Hosted by</span>
+        <input id="f-hostsLine" maxlength="160" value="<%= data.hostsLine %>" placeholder="Dovid &amp; Miriam Goldberg">
+      </label>
+
+      <div class="field-row">
+        <label class="field">
+          <span>Date</span>
+          <input id="f-date" type="date" value="<%= data.date %>">
+        </label>
+        <label class="field">
+          <span>Time</span>
+          <input id="f-time" maxlength="60" value="<%= data.time %>" placeholder="7:00 PM">
+        </label>
+      </div>
+
+      <label class="check">
+        <input id="f-afterSunset" type="checkbox" <%= data.afterSunset ? 'checked' : '' %>>
+        <span>Event is after shkiah (advance the Hebrew date)</span>
+      </label>
+
+      <label class="check">
+        <input id="f-bsd" type="checkbox" <%= data.bsd ? 'checked' : '' %>>
+        <span>Show בס״ד</span>
+      </label>
+
+      <label class="field">
+        <span>Venue</span>
+        <input id="f-venue" maxlength="120" value="<%= data.venue %>" placeholder="Ateres Chana Hall">
+      </label>
+
+      <label class="field">
+        <span>Address</span>
+        <input id="f-address" maxlength="200" value="<%= data.address %>" placeholder="221 Maple Ave, Monsey, NY">
+      </label>
+
+      <label class="field">
+        <span>Additional details</span>
+        <textarea id="f-note" rows="2" maxlength="400" placeholder="Kabbolas Ponim 6:30 · Seuda to follow"><%= data.note %></textarea>
+      </label>
+
+      <label class="field">
+        <span>Sign-off <em>(optional)</em></span>
+        <input id="f-signoff" maxlength="120" value="<%= data.signoff %>" placeholder="The Goldberg Family">
+      </label>
+
+      <div class="field">
+        <span class="field-label">Design</span>
+        <div class="theme-pills" id="themePills">
+          <% for (const [id, t] of Object.entries(THEMES)) { %>
+            <button type="button" class="pill<%= id === themeId ? ' active' : '' %>" data-themeid="<%= id %>" title="<%= t.name %>">
+              <span class="pill-swatch" data-swatch="<%= id %>"></span> <%= t.no %>
+            </button>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-gold btn-big" id="saveBtn"><%= mode === 'edit' ? 'Save changes' : 'Create my card' %></button>
+        <button class="btn btn-quiet" id="downloadBtn">Download image</button>
+      </div>
+      <p class="form-hint">Saving creates a share link for guests and a private edit link for you.</p>
+    </section>
+
+    <section class="editor-preview">
+      <div class="preview-frame" id="cardNode">
+        <%- include('partials/card', { d: data, themeId }) %>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="shareModal" hidden>
+    <div class="modal">
+      <h2>בשעה טובה — your card is ready</h2>
+      <div class="share-block">
+        <span class="share-label">Share with guests</span>
+        <div class="share-row"><input id="shareUrl" readonly><button class="btn btn-quiet" data-copy="shareUrl">Copy</button></div>
+      </div>
+      <div class="share-block">
+        <span class="share-label">Private edit link — save this to make changes</span>
+        <div class="share-row"><input id="editUrl" readonly><button class="btn btn-quiet" data-copy="editUrl">Copy</button></div>
+      </div>
+      <div class="modal-actions">
+        <a class="btn btn-gold" id="waShare" target="_blank" rel="noopener">Share on WhatsApp</a>
+        <a class="btn btn-quiet" id="viewCard" target="_blank" rel="noopener">Open card</a>
+        <button class="btn btn-quiet" id="closeModal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.__CARD__ = {
+      mode: <%- JSON.stringify(mode) %>,
+      slug: <%- JSON.stringify(slug) %>,
+      editKey: <%- JSON.stringify(editKey) %>,
+      themeId: <%- JSON.stringify(themeId) %>,
+      data: <%- JSON.stringify(data) %>,
+      eventDefaults: <%- JSON.stringify(Object.fromEntries(Object.entries(EVENTS).map(([k, v]) => [k, v.invite]))) %>
+    };
+  </script>
+  <script src="/vendor/html2canvas.min.js"></script>
+  <script src="/js/editor.js"></script>
+</body>
+</html>

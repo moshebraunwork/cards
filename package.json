@@ -1,0 +1,21 @@
+{
+  "name": "simcha-cards",
+  "version": "1.0.0",
+  "description": "Digital simcha invitation studio",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "html2canvas": "^1.4.1"
+  },
+  "dependencies": {
+    "@hebcal/core": "^6.8.0",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1"
+  },
+  "type": "module"
+}

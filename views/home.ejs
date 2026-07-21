@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <%- include('partials/head') %>
+  <title><%= BRAND %> — <%= TAGLINE %></title>
+  <meta name="description" content="<%= TAGLINE %>. Choose a design, personalize your simcha card, and share a beautiful link in minutes.">
+</head>
+<body class="page-home">
+  <header class="site-header">
+    <a class="wordmark" href="/"><%= BRAND %></a>
+    <a class="btn btn-gold" href="#designs">Create a card</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Digital simcha invitations</p>
+        <h1>Every simcha deserves a beautiful invitation.</h1>
+        <p class="lede">Choose a design, fill in your details — with the Hebrew date added automatically — and share an elegant card by WhatsApp, email, or text. No account needed.</p>
+        <div class="hero-actions">
+          <a class="btn btn-gold" href="#designs">Browse designs</a>
+          <a class="btn btn-quiet" href="/design/gilded">Start with a classic</a>
+        </div>
+        <ul class="hero-points">
+          <li>Bris · Kiddush · Upsherin · Bar &amp; Bas Mitzvah · Vort · Chasunah</li>
+          <li>Automatic Hebrew date, with after-shkiah adjustment</li>
+          <li>Share link previews beautifully in WhatsApp</li>
+          <li>Download as an image for print or status</li>
+        </ul>
+      </div>
+      <div class="hero-card">
+        <div class="mini mini-hero">
+          <%- include('partials/card', { d: SAMPLE, themeId: 'gilded' }) %>
+        </div>
+      </div>
+    </section>
+
+    <section class="designs" id="designs">
+      <div class="section-head">
+        <h2>The collection</h2>
+        <p>Six hand-set designs. Every one personalizes in under two minutes.</p>
+      </div>
+      <div class="gallery">
+        <% for (const [id, t] of Object.entries(THEMES)) { %>
+          <a class="gallery-item" href="/design/<%= id %>">
+            <div class="mini">
+              <%- include('partials/card', { d: SAMPLE, themeId: id }) %>
+            </div>
+            <div class="gallery-meta">
+              <span class="design-no">No. <%= t.no %></span>
+              <span class="design-name"><%= t.name %></span>
+              <span class="design-desc"><%= t.desc %></span>
+              <span class="design-cta">Personalize →</span>
+            </div>
+          </a>
+        <% } %>
+      </div>
+    </section>
+
+    <section class="how">
+      <div class="how-step"><span>Choose</span><p>Pick the design that fits your simcha.</p></div>
+      <div class="how-step"><span>Personalize</span><p>Names, date, and place — the Hebrew date fills itself in.</p></div>
+      <div class="how-step"><span>Share</span><p>Send one link. Keep your private edit link for changes.</p></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span><%= BRAND %> · בשעה טובה ומוצלחת</span>
+  </footer>
+</body>
+</html>

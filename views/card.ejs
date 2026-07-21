@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <%- include('partials/head') %>
+  <title><%= ogTitle %></title>
+  <meta name="description" content="<%= ogDesc %>">
+  <meta property="og:title" content="<%= ogTitle %>">
+  <meta property="og:description" content="<%= ogDesc %>">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="<%= ogUrl %>">
+  <meta property="og:site_name" content="<%= BRAND %>">
+  <meta name="robots" content="noindex">
+</head>
+<body class="page-card">
+  <main class="card-page">
+    <div class="preview-frame" id="cardNode">
+      <%- include('partials/card', { d: data, themeId: data.themeId }) %>
+    </div>
+
+    <div class="card-actions">
+      <a class="btn btn-gold" id="waShare" target="_blank" rel="noopener">Share on WhatsApp</a>
+      <button class="btn btn-quiet" id="copyLink">Copy link</button>
+      <button class="btn btn-quiet" id="downloadBtn">Download image</button>
+      <% if (data.address) { %>
+        <a class="btn btn-quiet" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=<%= encodeURIComponent(data.address) %>">Directions</a>
+      <% } %>
+    </div>
+
+    <a class="made-with" href="/">Create your own simcha card with <%= BRAND %> →</a>
+  </main>
+
+  <script src="/vendor/html2canvas.min.js"></script>
+  <script>
+    (function () {
+      var url = location.href.split('#')[0];
+      document.getElementById('waShare').href =
+        'https://wa.me/?text=' + encodeURIComponent("You're invited! " + url);
+      document.getElementById('copyLink').addEventListener('click', function () {
+        navigator.clipboard.writeText(url).then(function () {
+          var b = document.getElementById('copyLink');
+          b.textContent = 'Copied!';
+          setTimeout(function () { b.textContent = 'Copy link'; }, 1500);
+        });
+      });
+      document.getElementById('downloadBtn').addEventListener('click', function () {
+        var node = document.querySelector('#cardNode .card');
+        html2canvas(node, { scale: 3, useCORS: true, backgroundColor: null }).then(function (canvas) {
+          var a = document.createElement('a');
+          a.download = 'simcha-card.png';
+          a.href = canvas.toDataURL('image/png');
+          a.click();
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
