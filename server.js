@@ -37,6 +37,26 @@ function asset(urlPath) {
 
 const common = { BRAND, TAGLINE, THEMES, EVENTS, englishDate, hebrewDate, asset };
 
+// Theme background auto-detection. Drop an image named after a theme id into
+// public/img/themes/ (e.g. gilded.jpg, royal.png) and it becomes that theme's
+// full-bleed background automatically — no code edit needed. An explicit `bg`
+// filename in THEMES still wins if set. Rebuilt on each start (deploys restart
+// the app), and the URL is run through asset() so uploads bust the cache.
+const THEME_BG_EXTS = ['jpg', 'jpeg', 'png', 'webp', 'avif'];
+function detectThemeBackgrounds() {
+  const dir = path.join(publicDir, 'img', 'themes');
+  const map = {};
+  for (const id of Object.keys(THEMES)) {
+    const explicit = THEMES[id].bg;
+    let file = explicit || THEME_BG_EXTS.map(e => `${id}.${e}`).find(name => {
+      try { return fs.statSync(path.join(dir, name)).isFile(); } catch { return false; }
+    });
+    if (file) map[id] = asset(`/img/themes/${file}`);
+  }
+  return map;
+}
+common.themeBgs = detectThemeBackgrounds();
+
 app.get('/', (req, res) => {
   res.render('home', { ...common, SAMPLE });
 });

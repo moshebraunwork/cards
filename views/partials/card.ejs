@@ -4,7 +4,8 @@ const theme = (typeof THEMES !== 'undefined' && THEMES[themeId]) || {};
 const ev = (typeof EVENTS !== 'undefined' && EVENTS[d.eventType]) || {};
 const heb = hebrewDate(d.date, d.afterSunset);
 const eng = englishDate(d.date);
-const bgUrl = theme.bg ? ('/img/themes/' + theme.bg) : '';
+const bgUrl = (typeof themeBgs !== 'undefined' && themeBgs[themeId])
+  || (theme.bg ? ('/img/themes/' + theme.bg) : '');
 
 /* ---- decorative SVG builders (fixed 420x588 canvas, scales with the card) ---- */
 const cornerTransforms = [
